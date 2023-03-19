@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "",
+    "sources": [
+        "news.module.scss"
+    ],
+    "names": [],
+    "file": "news.module.css"
+}
