@@ -1,94 +1,132 @@
+# node-addon-test
+Playground with C++ addons, WebAssembly etc.
+
+#### Install
+- Install node.js 12+
+- [Optional. Just for `main-WIP.cpp`] Install [Boost C++ library](https://www.boost.org/) 1.71.0+ (Put to `addons/native_napi/boost` folder)
+```sh
+npm install
+```
+
+#### Run
+```sh
+npm start # runs ./index.js
+```
+
+## JavaScript
+- `group-by.js` - JS algorithm   
+
+## Native node.js addon ([N-API](https://nodejs.org/api/n-api.html))
+- `binding.gyp` - node-gyp compiler settings
+- `addons/native_napi/main.cc` - entry point  
+- `addons/native_napi/group_by.h` - C++ algorithm   
+- `addons/native_napi/group_by_binding.h` - JS/C++ wrappers (need totally optimization)
+- `addons/native_napi/index.js` - exports addon to node.js module
+- `addons/native_napi/CMakeLists.txt` - CMake file for manual testing (without node-gyp)
+- `addons/native_napi/main.cpp` - entry point for manual testing
+
+##### Compile as node-addon
+```sh
+npm install 
+# Yes, it also rebuilds C++ code
+```
+Note: check "MACOSX_DEPLOYMENT_TARGET" in your binding.gyp has quite differences or equivalent of your version of MacOS.
+If an error try to compile code with C version:
+```sh
+export CXXFLAGS="--std=c++17" && npm install
+```
+
+##### Compile and run as C++ application
+Build and run `CMakeLists.txt` by CLion etc.
 
 
-# GbDemoApp
+## Webassembly module ([Embind binder](https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html))
 
-This project was generated using [Nx](https://nx.dev).
+- `webassembly-embind/group_by.cpp` - c++ example
+- Other files are generated
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+Install [emsdk](https://emscripten.org/docs/getting_started/downloads.html)
 
-🔎 **Smart, Fast and Extensible Build System**
+Compile WASM (Run it from emsdk directory)
+```sh
+em++ --bind -std=c++1z -s ALLOW_MEMORY_GROWTH=1 <path_to_addon>/group_by_binding.cpp -o <path_to_addon>/group_by.js
+```
 
-## Adding capabilities to your workspace
+ALLOW_MEMORY_GROWTH=1 needs just for huge amount of data
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
-
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
-
-Below are our core plugins:
-
-- [React](https://reactjs.org)
-  - `npm install --save-dev @nrwl/react`
-- Web (no framework frontends)
-  - `npm install --save-dev @nrwl/web`
-- [Angular](https://angular.io)
-  - `npm install --save-dev @nrwl/angular`
-- [Nest](https://nestjs.com)
-  - `npm install --save-dev @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `npm install --save-dev @nrwl/express`
-- [Node](https://nodejs.org)
-  - `npm install --save-dev @nrwl/node`
-
-There are also many [community plugins](https://nx.dev/community) you could add.
-
-## Generate an application
-
-Run `nx g @nrwl/react:app my-app` to generate an application.
-
-> You can use any of the plugins above to generate applications as well.
-
-When using Nx, you can create multiple applications and libraries in the same workspace.
-
-## Generate a library
-
-Run `nx g @nrwl/react:lib my-lib` to generate a library.
-
-> You can also use any of the plugins above to generate libraries as well.
-
-Libraries are shareable across libraries and applications. They can be imported from `@gb-demo-app/mylib`.
-
-## Development server
-
-Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `nx test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx dep-graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev) to learn more.
+- `webassembly-embind/group_by.js` - result module
 
 
+## Webassembly module ([WebIDL binder](https://emscripten.org/docs/porting/connecting_cpp_and_javascript/WebIDL-Binder.html))
 
-## ☁ Nx Cloud
+- `webassembly-webidl/group_by.idl` - interface declaration
+- `webassembly-webidl/group_by.cpp` - c++ example
+- `webassembly-webidl/glue_wrapper.cpp` - represents classes for binding
+- Other files are generated
 
-### Distributed Computation Caching & Distributed Task Execution
+Generate glue files
+```sh
+python <emsdk-path>/upstream/emscripten/tools/webidl_binder.py group_by.idl glue
+```
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
+Compile wasm
+```sh
+em++ -std=c++1z glue_wrapper.cpp --post-js glue.js -o group_by.js
+```
 
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
+- `webassembly-webidl/group_by.js` - result module
 
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
+## Example
+Group items by field
+```js
+// Source data
+const items =
+[
+    {id: 1, name: 'A', val: 1, smth: 'F'},
+    {id: 2, name: 'B', val: 2, smth: 444},
+    {id: 3, name: 'A', val: 3, smth: true},
+    {id: 4, name: 'B', val: 4, smth: false},
+    {id: 5, name: 'A', val: 5, smth: null}
+]
 
-Visit [Nx Cloud](https://nx.app/) to learn more.
+// Name of field which is base for grouping
+const groupField = 'name'
+
+// Fields whose values are to be summed
+const sumFields = ['val']
+
+
+groupBy(items, groupField, sumFields) 
+```
+Result:
+```js
+[
+    {
+        groupField: 'name',
+        groupValue: 'A',
+        // Items in the group 'A'
+        items: [
+            {id: 1, name: 'A', val: 1, smth: 'F'},
+            {id: 3, name: 'A', val: 3, smth: true}, 
+            {id: 5, name: 'A', val: 5, smth: null}
+        ],
+        // Summed values (from fields described by sumFields)
+        val: 9, // 1 + 3 + 5
+        // Other fields of first item of group
+        name: 'A',
+        id: 1,
+        smth: 'F'
+    }, {
+        groupField: 'name',
+        groupValue: 'B',
+        items: [
+            {id: 2, name: 'B', val: 2, smth: 444},
+            {id: 4, name: 'B', val: 4, smth: false}, 
+        ],
+        val: 6, // 2 + 4
+        name: 'B',
+        id: 2,
+        smth: 444
+    }
+]
+```
