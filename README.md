@@ -10,7 +10,7 @@ npm install
 
 #### Run
 ```sh
-npm start # runs ./index.js
+npm start # runs ./index.js  база данных на mongodb создана
 ```
 
 ## JavaScript
