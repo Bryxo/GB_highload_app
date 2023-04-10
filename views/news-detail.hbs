@@ -1,0 +1,11 @@
+<div class='container' style='max-width: 600px; margin: 0 auto;'>
+  <h1>{{news.title}}</h1>
+  <div>
+    <p>Автор: {{news.user.nickName}}</p>
+    <p>Опубликовано: {{news.createdAt}}</p>
+  </div>
+  <img src='{{news.cover}}' alt='news' style='width: 100%; height: 100%;' />
+  <p class='mt-4'>{{news.description}}</p>
+    <div id="app"></div>
+</div>
+<script src="/js/comments.jsx" type="text/babel"></script>

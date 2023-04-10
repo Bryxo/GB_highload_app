@@ -1,132 +1,73 @@
-# node-addon-test
-Playground with C++ addons, WebAssembly etc.
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+</p>
 
-#### Install
-- Install node.js 12+
-- [Optional. Just for `main-WIP.cpp`] Install [Boost C++ library](https://www.boost.org/) 1.71.0+ (Put to `addons/native_napi/boost` folder)
-```sh
-npm install
+[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+[circleci-url]: https://circleci.com/gh/nestjs/nest
+
+  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+    <p align="center">
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
+<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
+<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
+<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
+<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
+  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
+    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
+  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
+</p>
+  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
+  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+
+## Description
+
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+
+## Installation
+
+```bash
+$ npm install
 ```
 
-#### Run
-```sh
-npm start # runs ./index.js  база данных на mongodb создана
+## Running the app
+
+```bash
+# development
+$ npm run start
+
+# watch mode
+$ npm run start:dev
+
+# production mode
+$ npm run start:prod
 ```
 
-## JavaScript
-- `group-by.js` - JS algorithm   
+## Test
 
-## Native node.js addon ([N-API](https://nodejs.org/api/n-api.html))
-- `binding.gyp` - node-gyp compiler settings
-- `addons/native_napi/main.cc` - entry point  
-- `addons/native_napi/group_by.h` - C++ algorithm   
-- `addons/native_napi/group_by_binding.h` - JS/C++ wrappers (need totally optimization)
-- `addons/native_napi/index.js` - exports addon to node.js module
-- `addons/native_napi/CMakeLists.txt` - CMake file for manual testing (without node-gyp)
-- `addons/native_napi/main.cpp` - entry point for manual testing
+```bash
+# unit tests
+$ npm run test
 
-##### Compile as node-addon
-```sh
-npm install 
-# Yes, it also rebuilds C++ code
-```
-Note: check "MACOSX_DEPLOYMENT_TARGET" in your binding.gyp has quite differences or equivalent of your version of MacOS.
-If an error try to compile code with C version:
-```sh
-export CXXFLAGS="--std=c++17" && npm install
+# e2e tests
+$ npm run test:e2e
+
+# test coverage
+$ npm run test:cov
 ```
 
-##### Compile and run as C++ application
-Build and run `CMakeLists.txt` by CLion etc.
+## Support
 
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Webassembly module ([Embind binder](https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html))
+## Stay in touch
 
-- `webassembly-embind/group_by.cpp` - c++ example
-- Other files are generated
+- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
+- Website - [https://nestjs.com](https://nestjs.com/)
+- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-Install [emsdk](https://emscripten.org/docs/getting_started/downloads.html)
+## License
 
-Compile WASM (Run it from emsdk directory)
-```sh
-em++ --bind -std=c++1z -s ALLOW_MEMORY_GROWTH=1 <path_to_addon>/group_by_binding.cpp -o <path_to_addon>/group_by.js
-```
-
-ALLOW_MEMORY_GROWTH=1 needs just for huge amount of data
-
-- `webassembly-embind/group_by.js` - result module
-
-
-## Webassembly module ([WebIDL binder](https://emscripten.org/docs/porting/connecting_cpp_and_javascript/WebIDL-Binder.html))
-
-- `webassembly-webidl/group_by.idl` - interface declaration
-- `webassembly-webidl/group_by.cpp` - c++ example
-- `webassembly-webidl/glue_wrapper.cpp` - represents classes for binding
-- Other files are generated
-
-Generate glue files
-```sh
-python <emsdk-path>/upstream/emscripten/tools/webidl_binder.py group_by.idl glue
-```
-
-Compile wasm
-```sh
-em++ -std=c++1z glue_wrapper.cpp --post-js glue.js -o group_by.js
-```
-
-- `webassembly-webidl/group_by.js` - result module
-
-## Example
-Group items by field
-```js
-// Source data
-const items =
-[
-    {id: 1, name: 'A', val: 1, smth: 'F'},
-    {id: 2, name: 'B', val: 2, smth: 444},
-    {id: 3, name: 'A', val: 3, smth: true},
-    {id: 4, name: 'B', val: 4, smth: false},
-    {id: 5, name: 'A', val: 5, smth: null}
-]
-
-// Name of field which is base for grouping
-const groupField = 'name'
-
-// Fields whose values are to be summed
-const sumFields = ['val']
-
-
-groupBy(items, groupField, sumFields) 
-```
-Result:
-```js
-[
-    {
-        groupField: 'name',
-        groupValue: 'A',
-        // Items in the group 'A'
-        items: [
-            {id: 1, name: 'A', val: 1, smth: 'F'},
-            {id: 3, name: 'A', val: 3, smth: true}, 
-            {id: 5, name: 'A', val: 5, smth: null}
-        ],
-        // Summed values (from fields described by sumFields)
-        val: 9, // 1 + 3 + 5
-        // Other fields of first item of group
-        name: 'A',
-        id: 1,
-        smth: 'F'
-    }, {
-        groupField: 'name',
-        groupValue: 'B',
-        items: [
-            {id: 2, name: 'B', val: 2, smth: 444},
-            {id: 4, name: 'B', val: 4, smth: false}, 
-        ],
-        val: 6, // 2 + 4
-        name: 'B',
-        id: 2,
-        smth: 444
-    }
-]
-```
+Nest is [MIT licensed](LICENSE).

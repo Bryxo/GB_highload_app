@@ -1,4 +1,0 @@
-interface CollectionUtils {
-    void CollectionUtils();
-    double group_by(DOMString text, long value);
-};
